@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jt.order.mapper.OrderMapper" >
+  
+  <!--要求实现三张表关联查询  -->
+  <select id="findOrderById" resultMap="orderRM">
+  	select * from tb_order where order_id = #{id}
+  </select>
+  
+  <!--
+  	 autoMapping="true" 为处主键之外的数据赋值
+    -->
+  <resultMap type="Order" id="orderRM" autoMapping="true">
+  	<!--必须封装主键  -->
+  	<id column="order_id" property="orderId"/>
+  	<!--一对一关联封装   javaType 封装对象的数据 -->
+  	<association property="orderShipping" javaType="OrderShipping" 
+  	select="findOrderShipping" column="order_id"/>
+  	
+  	<!--一对多关联封装  ofType 表示集合中每个元素的值   -->
+  	<collection property="orderItems" ofType="OrderItem" 
+  		select="findOrderItems" 
+  	column="order_id"/>
+  </resultMap>
+  
+  <select id="findOrderShipping" resultType="OrderShipping">
+  	select * from tb_order_shipping where order_id = #{id}
+  </select>
+  
+  <select id="findOrderItems" resultType="OrderItem">
+  	select * from tb_order_item where order_id = #{id}
+  </select>
+</mapper>
